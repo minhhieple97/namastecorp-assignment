@@ -10,7 +10,7 @@ const config: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [User, Flight, Request, FlightRequest],
+  entities: ['dist/**/*.entity.js'],
   synchronize: process.env.DB_SYNCHRONIZE === 'true' ? true : false,
 };
 export default config;
