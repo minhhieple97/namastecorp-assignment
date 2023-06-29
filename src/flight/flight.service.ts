@@ -6,7 +6,9 @@ import { Request } from 'src/request/request.entity';
 import { FlightRequest } from './flight-request.entity';
 import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
-
+import { Worker } from 'worker_threads';
+import { resolve } from 'path';
+import { workerThreadSortItineraryFilePath } from 'src/workers/config';
 @Injectable()
 export class FlightService {
   constructor(
@@ -28,6 +30,11 @@ export class FlightService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      console.log(flightsData);
+      const testWorker = await this.generateSortedItinerary(
+        flightsData.flights,
+      );
+      console.log({ testWorker });
       const request = await queryRunner.manager.save(Request, {
         ip,
         user,
@@ -55,27 +62,27 @@ export class FlightService {
     }
   }
 
-  sortItinerary(itinerary: Flight[]) {
-    const result = itinerary.map((flightFrom) => {
-      const flightToIndex = itinerary.findIndex(
-        (flight) => flight.from === flightFrom.to,
-      );
-      return [flightFrom, ...this.helperFunction(itinerary, flightToIndex)];
+  async generateSortedItinerary(
+    flightsData: FlightData[],
+  ): Promise<FlightData[]> {
+    const worker = new Worker(workerThreadSortItineraryFilePath, {
+      workerData: flightsData,
     });
-    return result;
-  }
 
-  helperFunction(itinerary: Flight[], flightToIndex: number) {
-    if (flightToIndex >= 0) {
-      const flightTo = itinerary[flightToIndex];
-      return [
-        flightTo,
-        ...this.helperFunction(
-          itinerary,
-          itinerary.findIndex((flight) => flight.from === flightTo.to),
-        ),
-      ];
-    }
-    return [];
+    return new Promise((resolve, reject) => {
+      worker.on('message', (result) => {
+        resolve(result);
+      });
+
+      worker.on('error', (err) => {
+        reject(err);
+      });
+
+      worker.on('exit', (code) => {
+        if (code !== 0) {
+          reject(new Error(`Worker stopped with exit code ${code}`));
+        }
+      });
+    });
   }
 }

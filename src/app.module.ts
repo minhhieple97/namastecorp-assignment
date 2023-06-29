@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { ApiKeyMiddleware } from './middlewares/api-key.middleware';
 import { dataSourceOptions } from './db/data-source';
+import { ItineraryModule } from './itinerary/itinerary.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { dataSourceOptions } from './db/data-source';
     RequestModule,
     FlightModule,
     UserModule,
+    ItineraryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
