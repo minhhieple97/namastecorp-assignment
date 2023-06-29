@@ -19,34 +19,39 @@ git clone https://github.com/your-username/project-name.git
 
 2. Create a `.env` file in the root of the project, following the example in `.env.example`, and fill in the necessary environment variables.
 
-docker-compose build --build-arg TARGET=development api_dev
-
 3. Build and start the development containers with Docker Compose:
 
 ```bash
-docker-compose up -d app-dev
+docker-compose up -d api_dev
 ```
 
 This will build the Docker images and start the containers for the development environment.
 
 4. Access the Nest.js application at `http://localhost:3000`.
 
-## Usage
+## Migration
 
-Describe how to use the project, including any available API endpoints or command-line interfaces.
+Need run all command bellow inside container
 
-## Development
+1. Generate a migration file for initializing the database schema:
 
-Describe how to contribute to the project, including any development guidelines or conventions.
+```
+npm run migration:generate -- src/db/migrations/<fileName>
 
-## Credits
+```
 
-Acknowledge any resources or collaborators that helped you create the project.
+2. Create a migration file:
 
-## License
+```
+npm run migration:create -- src/db/migrations/<fileName>
 
-Include the license that applies to the project (e.g., MIT, Apache 2.0, etc.).
+```
 
-## Contact
+3. Run migration file
 
-Provide contact information for the project maintainer or team.
+```
+npm run migration:run
+
+```
+
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';

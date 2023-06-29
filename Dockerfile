@@ -9,6 +9,7 @@ COPY package*.json ./
 
 # Install the development dependencies
 RUN npm install
+RUN npm i -g typeorm 
 
 # Copy the rest of the application code into the container
 COPY . .
@@ -26,8 +27,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm install --only=production
-
+RUN npm install --omit=dev
+RUN npm i -g typeorm 
 # Copy the rest of the application code into the container
 COPY . .
 

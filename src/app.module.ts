@@ -3,11 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RequestModule } from './request/request.module';
-import config from './orm/typeorm.config';
 import { FlightModule } from './flight/flight.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { ApiKeyMiddleware } from './middlewares/api-key.middleware';
+import { dataSourceOptions } from './db/data-source';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { ApiKeyMiddleware } from './middlewares/api-key.middleware';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    TypeOrmModule.forRoot(config),
+    TypeOrmModule.forRoot(dataSourceOptions),
     RequestModule,
     FlightModule,
     UserModule,
@@ -25,6 +25,6 @@ import { ApiKeyMiddleware } from './middlewares/api-key.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ApiKeyMiddleware).forRoutes('*');
+    consumer.apply(ApiKeyMiddleware).forRoutes('flights');
   }
 }

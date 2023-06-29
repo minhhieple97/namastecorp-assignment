@@ -14,7 +14,9 @@ services:
       - DB_DATABASE=nest_app_dev
       - DB_SYNCHRONIZE=true
     depends_on:
-      - db_dev
+      db_dev:
+        condition: service_healthy
+    command: sh -c 'npm run migration:run && npm run start:dev'
     ports:
       - '3000:3000'
     volumes:
@@ -30,8 +32,7 @@ services:
       - '3306:3306'
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
-      interval: 1s
-      timeout: 5s
+      timeout: 20s
       retries: 10
 
   db_prod:
@@ -43,8 +44,7 @@ services:
       - '3307:3306'
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
-      interval: 1s
-      timeout: 5s
+      timeout: 20s
       retries: 10
 
   api_prod:
@@ -59,6 +59,8 @@ services:
       - DB_PASSWORD=password
       - DB_DATABASE=nest_app_prod
     depends_on:
-      - db_prod
+      db_prod:
+        condition: service_healthy
+    command: sh -c 'npm run migration:run && npm run start:prod'
     ports:
       - '3001:3000'
