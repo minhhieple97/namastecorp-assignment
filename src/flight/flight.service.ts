@@ -9,6 +9,7 @@ import { User } from 'src/user/user.entity';
 import { Worker } from 'worker_threads';
 import { resolve } from 'path';
 import { workerThreadSortItineraryFilePath } from 'src/workers/config';
+import { FlightResponse } from './interfaces/flight.interface';
 @Injectable()
 export class FlightService {
   constructor(
@@ -25,21 +26,17 @@ export class FlightService {
     ip: string,
     user: User,
     flightsData: FlightsData,
-  ): Promise<Flight[]> {
+  ): Promise<FlightResponse[]> {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      console.log(flightsData);
-      const testWorker = await this.generateSortedItinerary(
-        flightsData.flights,
-      );
-      console.log({ testWorker });
+      const sortedItinerary = await this.sortItinerary(flightsData.flights);
       const request = await queryRunner.manager.save(Request, {
         ip,
         user,
       });
-      const flights = flightsData.flights.map((flightData) => {
+      const flights = sortedItinerary.map((flightData) => {
         const flight = new Flight();
         flight.from = flightData.from;
         flight.to = flightData.to;
@@ -55,16 +52,22 @@ export class FlightService {
       });
       await queryRunner.manager.save(FlightRequest, flightsRequest);
       await queryRunner.commitTransaction();
-      return flightsRecord;
+      return flightsRecord.map((el) => {
+        return {
+          id: el.id,
+          from: el.from,
+          to: el.to,
+          createdAt: el.createdAt,
+          updatedAt: el.updatedAt,
+        };
+      });
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;
     }
   }
 
-  async generateSortedItinerary(
-    flightsData: FlightData[],
-  ): Promise<FlightData[]> {
+  async sortItinerary(flightsData: FlightData[]): Promise<FlightData[]> {
     const worker = new Worker(workerThreadSortItineraryFilePath, {
       workerData: flightsData,
     });

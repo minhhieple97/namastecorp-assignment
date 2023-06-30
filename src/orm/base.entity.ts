@@ -25,6 +25,10 @@ export class MyBaseEntity extends BaseEntity {
   })
   updatedAt: Date;
 
-  @DeleteDateColumn({ type: 'timestamp', nullable: true, name: 'deleted_at' })
+  @DeleteDateColumn({
+    type: 'timestamp',
+    nullable: true,
+    name: 'deleted_at',
+  })
   deletedAt: Date;
 }
