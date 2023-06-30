@@ -7,7 +7,6 @@ import { FlightRequest } from './flight-request.entity';
 import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { Worker } from 'worker_threads';
-import { resolve } from 'path';
 import { workerThreadSortItineraryFilePath } from 'src/workers/config';
 import { FlightResponse } from './interfaces/flight.interface';
 @Injectable()

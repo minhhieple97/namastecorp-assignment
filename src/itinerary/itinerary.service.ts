@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Flight } from 'src/flight/flight.entity';
 import { FlightObject } from './interfaces/itinerary.interface';
+import { FlightData } from 'src/flight/dto/create-flights.dto';
 
 @Injectable()
 export class ItineraryService {
-  sortItinerary(itinerary: Flight[]) {
+  sortItinerary(itinerary: FlightData[]) {
     const memo: FlightObject = {};
     for (const flight of itinerary) {
       const arr = this.findDestination(itinerary, flight, memo);
@@ -12,7 +12,11 @@ export class ItineraryService {
     }
     return [];
   }
-  findDestination(itinerary: Flight[], flightFrom: Flight, memo: FlightObject) {
+  findDestination(
+    itinerary: FlightData[],
+    flightFrom: FlightData,
+    memo: FlightObject,
+  ) {
     const key = `${flightFrom.from}_${flightFrom.to}`;
     if (key in memo) return memo[key];
     else memo[key] = [flightFrom];
