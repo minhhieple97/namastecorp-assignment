@@ -1,11 +1,11 @@
-# Use the official Node.js 18 image as the base image
+###################
+# BUILD FOR LOCAL DEVELOPMENT
+###################
+
 FROM node:18-alpine AS development
 
 # Set the working directory in the container
 WORKDIR /app
-
-# clear application caching
-RUN npm cache clean --force
 
 # Copy package.json and package-lock.json into the container
 COPY package*.json ./
@@ -16,7 +16,7 @@ RUN npm install -g npm@9.7.2 && \
     npm install -g pm2@5.3.0 && npm install glob rimraf
 
 # Install the development dependencies
-RUN npm install --only=development
+RUN npm ci
 
 # Copy the rest of the application code into the container
 COPY . .
@@ -24,29 +24,49 @@ COPY . .
 # Build the app in development mode
 RUN npm run build
 
-# Build the app for production
-FROM node:18-alpine AS production
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-# Set the working directory in the container
+
+###################
+# BUILD FOR PRODUCTION
+###################
+
+FROM node:18-alpine As build
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json into the container
 COPY package*.json ./
 
-# clear application caching
-RUN npm cache clean --force
-
-# Install default package
-RUN npm install -g npm@9.7.2 && \
-    npm install -g typeorm@0.3.17 && \
-    npm install -g pm2@5.3.0
-
-# Install only production dependencies
-RUN npm install --omit=dev
+COPY --from=development /app/node_modules ./node_modules
 
 COPY . .
 
-COPY --from=development /app/dist ./dist
+# Run the build command which creates the production bundle
+RUN npm run build
 
+# Set NODE_ENV environment variable
+ENV NODE_ENV production
+
+# Running `npm ci` removes the existing node_modules directory and passing in --only=production ensures that only the production dependencies are installed. This ensures that the node_modules directory is as optimized as possible
+RUN npm install --omit=dev && npm cache clean --force
+
+
+###################
+# PRODUCTION
+###################
+
+FROM node:18-alpine AS production
+
+# Set the working directory to the app directory
+WORKDIR /app
+
+# Install default package
+RUN npm install -g typeorm@0.3.17 && npm install -g pm2@5.3.0
+
+# Copy the bundled code from the build stage to the production image
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+
+COPY . .
+
+
+# Run the app with pm2
 CMD ["npm", "run", "pm2:prod"]

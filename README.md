@@ -54,4 +54,10 @@ npm run migration:run
 
 ```
 
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+## Build image
+
+- Build image for specify environment
+
+```
+docker-compose build --no-cache  --build-arg TARGET=<environtment> <image_name>
+```
