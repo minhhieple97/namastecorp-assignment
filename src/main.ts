@@ -27,6 +27,6 @@ async function bootstrap() {
     },
   });
   app.useGlobalPipes(validationPipe);
-  await app.listen(3000);
+  await app.listen(configService.get('SERVER_PORT'));
 }
 bootstrap();
