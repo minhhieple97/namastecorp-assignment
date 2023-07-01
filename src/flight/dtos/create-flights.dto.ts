@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class FlightData {
+export class FlightItemDTO {
   @IsNotEmpty()
   @IsString()
   from: string;
@@ -18,11 +18,11 @@ export class FlightData {
   to: string;
 }
 
-export class FlightsData {
+export class FlightsDTO {
   @IsArray()
   @ArrayMinSize(1)
   @ArrayMaxSize(100)
   @ValidateNested({ each: true })
-  @Type(() => FlightData)
-  flights: FlightData[];
+  @Type(() => FlightItemDTO)
+  flights: FlightItemDTO[];
 }

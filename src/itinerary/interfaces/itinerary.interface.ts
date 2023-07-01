@@ -1,6 +1,5 @@
-import { FlightData } from 'src/flight/dto/create-flights.dto';
-import { Flight } from 'src/flight/flight.entity';
+import { FlightItemDTO } from 'src/flight/dtos/create-flights.dto';
 
 export type FlightObject = {
-  [key: string]: FlightData[];
+  [key: string]: FlightItemDTO[];
 };

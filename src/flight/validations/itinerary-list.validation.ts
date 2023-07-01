@@ -1,9 +1,9 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
-import { FlightsData } from '../dto/create-flights.dto';
+import { FlightsDTO } from '../dtos/create-flights.dto';
 
 @Injectable()
-export class ValidateArrayPipe implements PipeTransform<any> {
-  async transform(flightsData: FlightsData) {
+export class ValidateArrayItineraryPipe implements PipeTransform<any> {
+  async transform(flightsData: FlightsDTO) {
     if (!Array.isArray(flightsData.flights)) {
       throw new BadRequestException('Invalid input data. Expected an array.');
     }
@@ -20,25 +20,19 @@ export class ValidateArrayPipe implements PipeTransform<any> {
         throw new BadRequestException(`Duplicate destination ${to}`);
       } else memoTo[to] = true;
     }
-    // we just have 1 from lost and 1 to lost
+    // we just have 1 destination orphan and 1 starting point lost
     let checkFromOrphan = 0;
     let checkToOrphan = 0;
     for (const fromValue in memoFrom) {
       if (!(fromValue in memoTo)) {
         if (checkFromOrphan === 0) checkFromOrphan += 1;
-        else
-          throw new BadRequestException(
-            `Starting point from ${fromValue} is orphan`,
-          );
+        else throw new BadRequestException(`Some starting point is orphan`);
       }
     }
     for (const toValue in memoTo) {
       if (!(toValue in memoFrom)) {
         if (checkToOrphan === 0) checkToOrphan += 1;
-        else
-          throw new BadRequestException(
-            `Destination point ${toValue} is orphan`,
-          );
+        else throw new BadRequestException(`Some destination point is orphan`);
       }
     }
     return flightsData;

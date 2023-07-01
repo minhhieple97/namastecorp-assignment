@@ -1,7 +1,7 @@
 import { plainToClass } from 'class-transformer';
 
 function WrapData() {
-  return function (_target, _key, descriptor) {
+  return function (target, key, descriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args) {

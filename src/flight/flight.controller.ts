@@ -7,13 +7,11 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
-import { Flight } from './flight.entity';
 import { FlightService } from './flight.service';
-import { FlightsData } from './dto/create-flights.dto';
+import { FlightsDTO } from './dtos/create-flights.dto';
 import { FlightResponse } from './interfaces/flight.interface';
-import { ValidateArrayPipe } from './pipes/itinerary-list.pipe';
+import { ValidateArrayItineraryPipe } from './validations/itinerary-list.validation';
 import WrapData from 'src/common/interceptors/wrap-data-response.interceptors';
-import { Request as RequestExpress } from 'express';
 @Controller('flights')
 @UseInterceptors(ClassSerializerInterceptor)
 export class FlightController {
@@ -22,16 +20,11 @@ export class FlightController {
   @Post()
   @WrapData()
   async createRequestWithFlights(
-    @Body(new ValidateArrayPipe()) flightsData: FlightsData,
+    @Body(new ValidateArrayItineraryPipe()) flightsData: FlightsDTO,
     @Ip() ip: string,
-    @Request() req: RequestExpress,
+    @Request() req,
   ): Promise<FlightResponse[]> {
     const user = req.user;
-    const flight = await this.flightService.createRequestWithFlights(
-      ip,
-      user,
-      flightsData,
-    );
-    return flight;
+    return this.flightService.createRequestWithFlights(ip, user, flightsData);
   }
 }
