@@ -14,7 +14,7 @@ Before you begin, make sure your development environment includes the following:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/project-name.git
+git clone https://github.com/minhhieple97/namastecorp-assignment.git
 ```
 
 2. Create a `.env` file in the root of the project, following the example in `.env.example`, and fill in the necessary environment variables.
