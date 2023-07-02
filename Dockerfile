@@ -67,4 +67,4 @@ COPY . .
 
 
 # Run the app with pm2
-CMD ["npm", "run", "pm2"]
+# CMD ["npm", "run", "pm2"]
