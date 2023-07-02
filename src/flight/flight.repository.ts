@@ -1,9 +1,6 @@
 import { DataSource, Repository } from 'typeorm';
 import { Flight } from './flight.entity';
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/user/user.entity';
-import { FlightItemDTO } from './dtos/create-flights.dto';
-import { FlightResponse } from './interfaces/flight.interface';
 import { FlightRequest } from './flight-request.entity';
 import { Request } from 'src/request/request.entity';
 import { JobDataItinerary } from 'src/itinerary/interfaces/itinerary.interface';
@@ -20,10 +17,10 @@ export class FlightRepository extends Repository<Flight> {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const request = await queryRunner.manager.save(Request, {
-        ip,
-        user,
-      });
+      const request = new Request();
+      request.ip = ip;
+      request.user = user;
+      await queryRunner.manager.save(Request, request);
       const flights = sortedItinerary.map((flightData) => {
         const flight = new Flight();
         flight.from = flightData.from;
@@ -38,7 +35,7 @@ export class FlightRepository extends Repository<Flight> {
         flightRequest.request = request;
         return flightRequest;
       });
-      await queryRunner.manager.save(FlightRequest, flightsRequest);
+      await queryRunner.manager.insert(FlightRequest, flightsRequest);
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
