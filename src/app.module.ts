@@ -31,6 +31,9 @@ import { ExpressAdapter } from '@bull-board/express';
           port: Number(configService.get('REDIS_PORT')),
           password: configService.get('REDIS_PASSWORD'),
         },
+        defaultJobOptions: {
+          removeOnComplete: true,
+        },
       }),
       inject: [ConfigService],
     }),
