@@ -11,9 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install default package
-RUN npm install -g npm@9.7.2 && \
-    npm install -g typeorm@0.3.17 && \
-    npm install -g pm2@5.3.0 && npm install glob rimraf
+RUN npm install -g npm@9.7.2 && npm install -g typeorm@0.3.17
 
 # Install the development dependencies
 RUN npm ci
@@ -45,7 +43,7 @@ RUN npm run build
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
 
-# Running `npm ci` removes the existing node_modules directory and passing in --only=production ensures that only the production dependencies are installed. This ensures that the node_modules directory is as optimized as possible
+# Only install node packages for production
 RUN npm install --omit=dev && npm cache clean --force
 
 
@@ -69,4 +67,4 @@ COPY . .
 
 
 # Run the app with pm2
-CMD ["npm", "run", "pm2:prod"]
+CMD ["npm", "run", "pm2"]
