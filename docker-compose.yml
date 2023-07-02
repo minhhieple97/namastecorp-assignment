@@ -18,12 +18,25 @@ services:
     depends_on:
       db_dev:
         condition: service_healthy
-    command: sh -c 'npm run migration:run && npm run pm2:dev'
+      redis:
+        condition: service_healthy
+    command: sh -c 'npm run migration:run && npm run start:dev'
     ports:
       - '${SERVER_PORT}:${SERVER_PORT}'
     volumes:
       - .:/app
       - /app/node_modules
+
+  redis:
+    image: redis:7.0.11-alpine
+    ports:
+      - '${REDIS_PORT}:6379'
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 1s
+      retries: 5
 
   db_dev:
     image: mysql:8
@@ -31,53 +44,9 @@ services:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_DATABASE}
     ports:
-      - '3306:3306'
+      - '${DB_PORT}:3306'
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
-      timeout: 5s
+      timeout: 1s
       retries: 10
-
-  # api_prod:
-  #   build:
-  #     context: .
-  #     target: production
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - NODE_ENV=${NODE_ENV}
-  #     - DB_HOST=${DB_HOST}
-  #     - DB_PORT=${DB_PORT}
-  #     - DB_USERNAME=${DB_USERNAME}
-  #     - DB_PASSWORD=${DB_PASSWORD}
-  #     - DB_DATABASE=${DB_DATABASE}
-  #     - DB_SYNCHRONIZE=${DB_SYNCHRONIZE}
-  #   depends_on:
-  #     db_dev:
-  #       condition: service_healthy
-  #   ports:
-  #     - '${SERVER_PORT}:${SERVER_PORT}'
-  #   volumes:
-  #     - .:/app
-  #     - /app/node_modules
-
-  # Web server service
-  nginx-proxy:
-    # pull image from docker hub
-    image: jwilder/nginx-proxy:alpine
-    # container name
-    container_name: nginx-proxy
-    # always restart, except that when the container is stopped
-    restart: unless-stopped
-    # docker run -t is allow
-    tty: true
-    # web server port default 81 and ssl run in port 443
-    ports:
-      - '81:81'
-      - '443:443'
-    # save (persist) data and also to share data between containers
-    volumes:
-      - ./:/var/www/nest-demo
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
-    # web server rely on application running
-    depends_on:
-      - api_dev
+      interval: 2s

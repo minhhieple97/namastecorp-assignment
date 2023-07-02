@@ -8,8 +8,7 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { FlightService } from './flight.service';
-import { FlightsDTO } from './dtos/create-flights.dto';
-import { FlightResponse } from './interfaces/flight.interface';
+import { FlightItemDTO, FlightsDTO } from './dtos/create-flights.dto';
 import { ValidateArrayItineraryPipe } from './validations/itinerary-list.validation';
 import WrapData from 'src/common/interceptors/wrap-data-response.interceptors';
 @Controller('flights')
@@ -23,7 +22,7 @@ export class FlightController {
     @Body(new ValidateArrayItineraryPipe()) flightsData: FlightsDTO,
     @Ip() ip: string,
     @Request() req,
-  ): Promise<FlightResponse[]> {
+  ): Promise<FlightItemDTO[]> {
     const user = req.user;
     return this.flightService.createRequestWithFlights(ip, user, flightsData);
   }

@@ -10,9 +10,7 @@ import { ConfigService } from '@nestjs/config';
 async function bootstrap() {
   dotenv.config();
   const app = await NestFactory.create(AppModule);
-  // app.setGlobalPrefix('api/v1');
   const configService = app.get(ConfigService);
-  console.log('abc');
   const validationPipe = new ValidationPipe({
     transform: true,
     disableErrorMessages: configService.get('NODE_ENV') === 'production',

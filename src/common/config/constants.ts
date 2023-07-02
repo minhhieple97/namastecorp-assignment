@@ -1,0 +1,7 @@
+export const QUEUE_NAME = {
+  ITINERARY: 'ITINERARY',
+};
+
+export const JOB_NAME = {
+  INSERT_ITINERARY: 'INSERT_ITINERARY',
+};

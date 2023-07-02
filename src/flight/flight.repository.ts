@@ -6,6 +6,7 @@ import { FlightItemDTO } from './dtos/create-flights.dto';
 import { FlightResponse } from './interfaces/flight.interface';
 import { FlightRequest } from './flight-request.entity';
 import { Request } from 'src/request/request.entity';
+import { JobDataItinerary } from 'src/itinerary/interfaces/itinerary.interface';
 
 @Injectable()
 export class FlightRepository extends Repository<Flight> {
@@ -13,11 +14,8 @@ export class FlightRepository extends Repository<Flight> {
     super(Flight, connection.createEntityManager());
   }
 
-  async createRequestWithFlights(
-    ip: string,
-    user: User,
-    sortedItinerary: FlightItemDTO[],
-  ): Promise<FlightResponse[]> {
+  async createRequestWithFlights(data: JobDataItinerary): Promise<void> {
+    const { ip, user, sortedItinerary } = data;
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -42,18 +40,11 @@ export class FlightRepository extends Repository<Flight> {
       });
       await queryRunner.manager.save(FlightRequest, flightsRequest);
       await queryRunner.commitTransaction();
-      return flightsRecord.map((el) => {
-        return {
-          id: el.id,
-          from: el.from,
-          to: el.to,
-          createdAt: el.createdAt,
-          updatedAt: el.updatedAt,
-        };
-      });
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;
+    } finally {
+      await queryRunner.release();
     }
   }
 }
