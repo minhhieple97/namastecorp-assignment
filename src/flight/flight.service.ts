@@ -5,7 +5,6 @@ import { ItineraryService } from 'src/itinerary/itinerary.service';
 import { InjectQueue } from '@nestjs/bull';
 import { JOB_NAME, QUEUE_NAME } from 'src/common/config/constants';
 import { Queue } from 'bull';
-const SORTTING_TIME_EACH_5_ELEMENTS = 50;
 @Injectable()
 export class FlightService {
   constructor(
@@ -33,15 +32,11 @@ export class FlightService {
   async getSortedItineraryV2(
     flightsData: FlightItemDTO[],
   ): Promise<FlightItemDTO[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) =>
       setTimeout(() => {
         const result = this.itineraryService.sortItinerary(flightsData);
         resolve(result);
-      }, 0);
-    });
-  }
-
-  generateTimeoutEventLoop(lengFlightsData: number): number {
-    return Math.ceil(lengFlightsData / 5) * SORTTING_TIME_EACH_5_ELEMENTS;
+      }, 0),
+    );
   }
 }

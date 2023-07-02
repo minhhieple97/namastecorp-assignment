@@ -18,7 +18,7 @@ import { BullAdapter } from '@bull-board/api/bullAdapter';
     BullModule.registerQueue({
       name: QUEUE_NAME.ITINERARY,
       limiter: {
-        max: 5,
+        max: 10,
         duration: 2000,
       },
     }),
