@@ -37,25 +37,47 @@ services:
       timeout: 5s
       retries: 10
 
-  api_prod:
-    build:
-      context: .
-      target: production
-    env_file:
-      - .env
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE=${DB_DATABASE}
-      - DB_SYNCHRONIZE=${DB_SYNCHRONIZE}
-    depends_on:
-      db_dev:
-        condition: service_healthy
+  # api_prod:
+  #   build:
+  #     context: .
+  #     target: production
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - NODE_ENV=${NODE_ENV}
+  #     - DB_HOST=${DB_HOST}
+  #     - DB_PORT=${DB_PORT}
+  #     - DB_USERNAME=${DB_USERNAME}
+  #     - DB_PASSWORD=${DB_PASSWORD}
+  #     - DB_DATABASE=${DB_DATABASE}
+  #     - DB_SYNCHRONIZE=${DB_SYNCHRONIZE}
+  #   depends_on:
+  #     db_dev:
+  #       condition: service_healthy
+  #   ports:
+  #     - '${SERVER_PORT}:${SERVER_PORT}'
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+
+  # Web server service
+  nginx-proxy:
+    # pull image from docker hub
+    image: jwilder/nginx-proxy:alpine
+    # container name
+    container_name: nginx-proxy
+    # always restart, except that when the container is stopped
+    restart: unless-stopped
+    # docker run -t is allow
+    tty: true
+    # web server port default 81 and ssl run in port 443
     ports:
-      - '${SERVER_PORT}:${SERVER_PORT}'
+      - '81:81'
+      - '443:443'
+    # save (persist) data and also to share data between containers
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./:/var/www/nest-demo
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    # web server rely on application running
+    depends_on:
+      - api_dev

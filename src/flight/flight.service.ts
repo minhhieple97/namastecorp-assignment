@@ -5,16 +5,23 @@ import { Worker } from 'worker_threads';
 import { workerThreadSortItineraryFilePath } from 'src/workers/config';
 import { FlightResponse } from './interfaces/flight.interface';
 import { FlightRepository } from './flight.repository';
+import { ItineraryService } from 'src/itinerary/itinerary.service';
+const SORTTING_TIME_EACH_5_ELEMENTS = 50;
 @Injectable()
 export class FlightService {
-  constructor(private readonly flightRepository: FlightRepository) {}
+  constructor(
+    private readonly flightRepository: FlightRepository,
+    private readonly itineraryService: ItineraryService,
+  ) {}
 
   async createRequestWithFlights(
     ip: string,
     user: User,
     flightsData: FlightsDTO,
   ): Promise<FlightResponse[]> {
-    const sortedItinerary = await this.getSortedItinerary(flightsData.flights);
+    const sortedItinerary = await this.getSortedItineraryV2(
+      flightsData.flights,
+    );
     return this.flightRepository.createRequestWithFlights(
       ip,
       user,
@@ -44,5 +51,21 @@ export class FlightService {
         }
       });
     });
+  }
+
+  async getSortedItineraryV2(
+    flightsData: FlightItemDTO[],
+  ): Promise<FlightItemDTO[]> {
+    const timeout = this.generateTimeoutEventLoop(flightsData.length);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const result = this.itineraryService.sortItinerary(flightsData);
+        resolve(result);
+      }, timeout);
+    });
+  }
+
+  generateTimeoutEventLoop(lengFlightsData: number): number {
+    return Math.ceil(lengFlightsData / 5) * SORTTING_TIME_EACH_5_ELEMENTS;
   }
 }
