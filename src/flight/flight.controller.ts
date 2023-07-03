@@ -10,7 +10,7 @@ import {
 import { FlightService } from './flight.service';
 import { FlightItemDTO, FlightsDTO } from './dtos/create-flights.dto';
 import { ValidateArrayItineraryPipe } from './validations/itinerary-list.validation';
-import WrapData from 'src/common/interceptors/wrap-data-response.interceptors';
+import WrapData from '../common/interceptors/wrap-data-response.interceptors';
 @Controller('flights')
 @UseInterceptors(ClassSerializerInterceptor)
 export class FlightController {

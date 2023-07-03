@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { FlightItemDTO, FlightsDTO } from './dtos/create-flights.dto';
 import { User } from 'src/user/user.entity';
-import { ItineraryService } from 'src/itinerary/itinerary.service';
+import { ItineraryService } from '../itinerary/itinerary.service';
 import { InjectQueue } from '@nestjs/bull';
-import { JOB_NAME, QUEUE_NAME } from 'src/common/config/constants';
+import { JOB_NAME, QUEUE_NAME } from '../common/config/constants';
 import { Queue } from 'bull';
 @Injectable()
 export class FlightService {
   constructor(
     private readonly itineraryService: ItineraryService,
     @InjectQueue(QUEUE_NAME.ITINERARY)
-    private insertIitineraryQueue: Queue,
+    private itineraryQueue: Queue,
   ) {}
 
   async createRequestWithFlights(
@@ -21,7 +21,7 @@ export class FlightService {
     const sortedItinerary = await this.getSortedItineraryV2(
       flightsData.flights,
     );
-    await this.insertIitineraryQueue.add(JOB_NAME.INSERT_ITINERARY, {
+    await this.itineraryQueue.add(JOB_NAME.INSERT_ITINERARY, {
       ip,
       user,
       sortedItinerary,

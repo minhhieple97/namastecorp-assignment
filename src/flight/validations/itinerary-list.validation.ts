@@ -26,13 +26,19 @@ export class ValidateArrayItineraryPipe implements PipeTransform<any> {
     for (const fromValue in memoFrom) {
       if (!(fromValue in memoTo)) {
         if (checkFromOrphan === 0) checkFromOrphan += 1;
-        else throw new BadRequestException(`Some starting point is orphan`);
+        else
+          throw new BadRequestException(
+            `Starting point ${fromValue} is orphan  `,
+          );
       }
     }
     for (const toValue in memoTo) {
       if (!(toValue in memoFrom)) {
         if (checkToOrphan === 0) checkToOrphan += 1;
-        else throw new BadRequestException(`Some destination point is orphan`);
+        else
+          throw new BadRequestException(
+            `Destination point ${toValue} is orphan`,
+          );
       }
     }
     return flightsData;

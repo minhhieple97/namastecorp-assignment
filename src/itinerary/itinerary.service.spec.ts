@@ -13,14 +13,14 @@ describe('UserCalculateService', () => {
 
   describe('sortItinerary', () => {
     it('should sort the itinerary in the correct order', () => {
-      const inputItinerary = [
+      const inputItineraryList = [
         {
-          from: 'MIA',
-          to: 'SFO',
+          from: 'HN',
+          to: 'HCM',
         },
         {
-          from: 'EZE',
-          to: 'MIA',
+          from: 'HCM',
+          to: 'SFO',
         },
         {
           from: 'GRU',
@@ -30,14 +30,34 @@ describe('UserCalculateService', () => {
           from: 'SFO',
           to: 'GRU',
         },
-      ];
-      const expectedItinerary = [
         {
-          from: 'EZE',
-          to: 'MIA',
+          from: 'CDG',
+          to: 'SYD',
         },
         {
-          from: 'MIA',
+          from: 'SCL',
+          to: 'LHR',
+        },
+        {
+          from: 'LHR',
+          to: 'CDG',
+        },
+        {
+          from: 'SYD',
+          to: 'JFK',
+        },
+        {
+          from: 'JFK',
+          to: 'BEJ',
+        },
+      ];
+      const expectedItineraryList = [
+        {
+          from: 'HN',
+          to: 'HCM',
+        },
+        {
+          from: 'HCM',
           to: 'SFO',
         },
         {
@@ -48,9 +68,30 @@ describe('UserCalculateService', () => {
           from: 'GRU',
           to: 'SCL',
         },
+        {
+          from: 'SCL',
+          to: 'LHR',
+        },
+        {
+          from: 'LHR',
+          to: 'CDG',
+        },
+        {
+          from: 'CDG',
+          to: 'SYD',
+        },
+        {
+          from: 'SYD',
+          to: 'JFK',
+        },
+        {
+          from: 'JFK',
+          to: 'BEJ',
+        },
       ];
-      const sortedItinerary = service.sortItinerary(inputItinerary);
-      expect(sortedItinerary).toEqual(expectedItinerary);
+
+      const sortedItinerary = service.sortItinerary(inputItineraryList);
+      expect(sortedItinerary).toEqual(expectedItineraryList);
     });
 
     it('should return array with just one item', () => {
