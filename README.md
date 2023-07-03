@@ -25,7 +25,7 @@ git clone https://github.com/minhhieple97/namastecorp-assignment.git
 
 2. Create a `.env` file in the root of the project, following the example in `.env.example`, and fill in the necessary environment variables.
 
-3. Build and start the development containers with Docker Compose:
+3. Build and start the development containers with Docker Compose (Container may take up to 30 seconds to start up):
 
 ```bash
 docker-compose up -d api_dev
@@ -80,6 +80,8 @@ To use the API, follow these steps:
   ]
 }
 ```
+
+To run the unit tests, run `npm run test` in the terminal. This will run all the unit tests and output the results to the console.
 
 ## Migration
 
