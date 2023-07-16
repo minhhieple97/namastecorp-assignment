@@ -1,6 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 export const dataSourceOptions: DataSourceOptions = {
-  type: 'mysql',
+  type: 'postgres',
   host: process.env.DB_HOST,
   port: +process.env.DB_PORT,
   username: process.env.DB_USERNAME,
